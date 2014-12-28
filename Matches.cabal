@@ -1,0 +1,20 @@
+name:                Matches
+version:             0.1.0.0
+synopsis:            edu
+-- description:         
+license:             PublicDomain
+license-file:        LICENSE
+author:              rei
+maintainer:          naugadina@gmail.com
+-- copyright:           
+category:            Game
+build-type:          Simple
+cabal-version:       >=1.8
+
+executable Matches
+    main-is:             Main.hs  
+    other-modules:      
+    build-depends:       base ==4.6.*, text, random
+    hs-source-dirs:      src
+    --shows warnings
+    ghc-options:         -W 
