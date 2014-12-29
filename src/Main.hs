@@ -2,6 +2,7 @@ module Main where
 
 import Control.Monad 
 import System.Random
+import Control.Exception
 
 main = do
 	putStrLn "Choose the initial number of matches: " 
@@ -9,10 +10,19 @@ main = do
 	humanFirst <- randomIO :: IO Bool
 	playIO humanFirst $ return n
 
+--get the human input of any type of Read, keep asking until the value would pass the check
+humanInput :: Read a => (a -> Bool) -> String -> IO a 
+humanInput check message = do
+			n <- handle (ignore retry) readLn
+			if' (check n) (return n) $ retry
+			where 
+				retry = putStrLn message >> humanInput check message
+				
+ignore :: a -> IOException -> a
+ignore f _ = f 
+
 readPositive :: IO Int
-readPositive = do
-		n <- readLn
-		if' (n <= 0) (putStrLn "Positive, please" >> readPositive) $ return n 
+readPositive = humanInput (\n -> n > 0) "Positive, please" 
 
 maxTurn = 3
 
@@ -47,9 +57,7 @@ humanTurn t	| t <= 0  = return 0
 			return res
 
 getHumanTurn :: IO Int
-getHumanTurn = do 
-		n <- readLn
-		if' (n <= 0 || n > maxTurn) (putStrLn ("Between 0 and " ++ show(maxTurn) ++ ", please") >> getHumanTurn) $ return n 
+getHumanTurn = humanInput (\n -> n > 0 && n <= maxTurn) $ "Between 0 and " ++ show(maxTurn) ++ ", please" 
 
 playIO :: Bool -> IO (Int) -> IO (Int)
 playIO humanFirst tio = tio >>= play humanFirst 
